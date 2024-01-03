@@ -22,19 +22,56 @@ class Student {
         return new Promise((resolve, reject) => {
             const query = "INSERT INTO students SET ?";
             db.query(query, Student, (err, results) => {
-                resolve(this.show(results.insertId));
+                resolve(this.find(results.insertId));
             });
         });
     }
 
-    static show(id) {
+    static find(id) {
         return new Promise((resolve, reject) => {
-            const sql = `SELECT * FROM students WHERE id = ${id} `;
-            db.query(sql, (err, results) => {
-                resolve(results);
+            const sql = `SELECT * FROM students WHERE id = ?`;
+            db.query(sql, id, (err, results) => {
+                // destructing array
+                const [student] = results;
+                resolve(student);
             });
         });
     }
+
+   // mengupdate data student
+   static async update(id, data) {
+    await new Promise((resolve, reject) => {
+        const sql = "UPDATE students SET ? WHERE id = ?";
+        db.query(sql, [data, id], (err, results)=> {
+            resolve(results);
+        });
+    });
+    // mencari data yang baru diupdate
+    const student = await this.find(id);
+    return student;
+   }
+
+   // menghapus data dari database
+   static delete(id) {
+    return new Promise((resolve, reject) => {
+        const sql = "DELETE FROM students WHERE ID = ?";
+        db.query(sql, id, (err, results) => {
+            resolve(results);
+        });
+    });
+   }
+
+   // mencari data berdasarkan id
+   static find(id){
+    return new Promise((resolve, reject)=> {
+        const sql = "SELECT * FROM students WHERE id = ?";
+        db.query(sql, id, (err, results)=> {
+            // destructing array
+            const [student] = results;
+            resolve(student);
+        });
+    });
+   }
 
 
 }
